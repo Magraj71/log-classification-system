@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiUser, FiMail, FiEdit2, FiLogOut, FiCamera, FiSave } from "react-icons/fi";
+import {
+  FiUser,
+  FiMail,
+  FiEdit2,
+  FiLogOut,
+  FiCamera,
+  FiSave,
+} from "react-icons/fi";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -27,8 +34,8 @@ export default function Profile() {
       try {
         const res = await fetch("/api/auth/profile", {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         const data = await res.json();
@@ -51,6 +58,39 @@ export default function Profile() {
     fetchProfile();
   }, [router]);
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    processImage(file);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+
+    const file = e.dataTransfer.files[0];
+
+    if (!file) return;
+
+    processImage(file);
+  };
+
+  const processImage = (file) => {
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Image must be smaller than 2MB");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setImage(reader.result);
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   const updateProfile = async () => {
     const token = localStorage.getItem("token");
     setIsSaving(true);
@@ -60,13 +100,13 @@ export default function Profile() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           name,
           bio,
-          image
-        })
+          image,
+        }),
       });
 
       const text = await res.text();
@@ -136,7 +176,8 @@ export default function Profile() {
                     alt="Profile"
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.target.src = "https://i.pravatar.cc/150?u=" + user.email;
+                      e.target.src =
+                        "https://i.pravatar.cc/150?u=" + user.email;
                     }}
                   />
                 </div>
@@ -202,13 +243,42 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Profile Image URL
                 </label>
-                <input
-                  type="url"
-                  placeholder="https://example.com/your-image.jpg"
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                />
+                <div
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={handleDrop}
+                  className="w-full border-2 border-dashed border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 transition"
+                >
+                  <FiCamera className="mx-auto text-gray-400 text-2xl mb-2" />
+
+                  <p className="text-gray-300">
+                    Drag & Drop your profile image here
+                  </p>
+
+                  <p className="text-gray-500 text-sm mt-1">
+                    or click to upload
+                  </p>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="imageUpload"
+                  />
+
+                  <label
+                    htmlFor="imageUpload"
+                    className="cursor-pointer text-blue-400 text-sm"
+                  >
+                    Browse File
+                  </label>
+                </div>
+                {image && (
+                  <img
+                    src={image}
+                    className="w-32 h-32 rounded-full mx-auto mt-4 object-cover"
+                  />
+                )}
                 <p className="text-xs text-gray-500 mt-1">
                   Enter a direct link to your profile image
                 </p>
@@ -233,7 +303,7 @@ export default function Profile() {
                     </>
                   )}
                 </button>
-                
+
                 <button
                   onClick={logout}
                   className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 py-3 px-4 rounded-lg font-medium hover:bg-red-500/20 hover:border-red-500/50 transition flex items-center justify-center"
@@ -256,13 +326,17 @@ export default function Profile() {
             <div className="flex justify-between">
               <span className="text-gray-400">Member since</span>
               <span className="text-gray-300">
-                {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
+                {user.createdAt
+                  ? new Date(user.createdAt).toLocaleDateString()
+                  : "N/A"}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Last updated</span>
               <span className="text-gray-300">
-                {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : "N/A"}
+                {user.updatedAt
+                  ? new Date(user.updatedAt).toLocaleDateString()
+                  : "N/A"}
               </span>
             </div>
             <div className="flex justify-between">

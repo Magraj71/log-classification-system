@@ -11,7 +11,7 @@ export default function Home() {
             <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent"> Classification System</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Harness the power of Deepseek R1 LLM, NLP, and Regex to automatically classify and analyze your system logs with unprecedented accuracy.
+            Harness the power of  LLM, NLP, and Regex to automatically classify and analyze your system logs with unprecedented accuracy.
           </p>
         </div>
 
@@ -23,7 +23,7 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">Deepseek R1 Integration</h3>
+            
             <p className="text-gray-400">Advanced LLM-based classification for complex log patterns and anomaly detection</p>
           </div>
 
@@ -69,7 +69,7 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-white mb-2">Multi-Model Classification</h3>
-                <p className="text-gray-400">Combines Regex, NLP, BERT, and Deepseek R1 for comprehensive log analysis with fallback mechanisms</p>
+                <p className="text-gray-400">Combines Regex, NLP, BERT for comprehensive log analysis with fallback mechanisms</p>
               </div>
             </div>
 

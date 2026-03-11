@@ -294,7 +294,7 @@ export default function UploadPage() {
                   {/* Metadata */}
                   <div className="text-xs text-gray-500 pt-4 border-t border-gray-700">
                     <p>Analyzed at: {new Date().toLocaleString()}</p>
-                    <p>Model: Deepseek R1 • BERT Ensemble</p>
+                    <p>Model: BERT Ensemble</p>
                   </div>
                 </div>
               </div>
@@ -310,8 +310,8 @@ export default function UploadPage() {
                   Paste your system log on the left and click "Analyze Log" to see AI-powered classification results
                 </p>
                 <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <FiCpu />
-                  <span>Powered by Deepseek R1 + BERT</span>
+                  
+                  
                 </div>
               </div>
             )}
@@ -323,7 +323,7 @@ export default function UploadPage() {
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition">
             <FiTrendingUp className="w-8 h-8 text-blue-400 mb-4" />
             <h3 className="font-semibold text-white mb-2">Multi-Model Analysis</h3>
-            <p className="text-sm text-gray-400">Combines Regex, NLP, BERT, and Deepseek R1 for accurate classification</p>
+            <p className="text-sm text-gray-400">Combines Regex, NLP, BERT for accurate classification</p>
           </div>
           
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition">

@@ -137,40 +137,42 @@ export default function Profile() {
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-300 text-lg">Loading profile...</p>
+          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 font-medium text-lg">Loading profile...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="  min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
-        <div className="mb-8 mt-10">
-          <h1 className="text-3xl font-bold text-white flex items-center">
-            <FiUser className="mr-3 text-blue-400" />
+        <div className="mb-10 mt-4">
+          <h1 className="text-3xl font-extrabold text-slate-900 flex items-center tracking-tight">
+            <FiUser className="mr-3 text-emerald-600" />
             Profile Settings
           </h1>
-          <p className="text-gray-400 mt-2">
+          <p className="text-slate-500 mt-2 font-medium text-lg">
             Manage your account information and preferences
           </p>
         </div>
 
         {/* Main Profile Card */}
-        <div className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
           {/* Cover Photo Area */}
-          <div className="h-32 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-b border-gray-700"></div>
+          <div className="h-40 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-400/10 border-b border-slate-100 relative">
+             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-multiply"></div>
+          </div>
 
           {/* Profile Content */}
-          <div className="px-8 pb-8">
+          <div className="px-8 pb-10">
             {/* Avatar Section */}
-            <div className="flex justify-center -mt-16 mb-6">
+            <div className="flex justify-center -mt-20 mb-6 relative z-10">
               <div className="relative group">
-                <div className="w-32 h-32 rounded-full border-4 border-gray-800 overflow-hidden bg-gray-700">
+                <div className="w-40 h-40 rounded-full border-[6px] border-white shadow-lg overflow-hidden bg-slate-100 relative">
                   <img
                     src={image || "https://i.pravatar.cc/150?u=" + user.email}
                     alt="Profile"
@@ -180,9 +182,13 @@ export default function Profile() {
                         "https://i.pravatar.cc/150?u=" + user.email;
                     }}
                   />
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <FiCamera className="text-white w-8 h-8" />
+                  </div>
                 </div>
-                <label className="absolute bottom-0 right-0 bg-blue-500 rounded-full p-2 cursor-pointer hover:bg-blue-600 transition shadow-lg opacity-0 group-hover:opacity-100">
-                  <FiCamera className="text-white w-4 h-4" />
+                <label className="absolute bottom-2 right-2 bg-emerald-600 text-white rounded-full p-3 cursor-pointer hover:bg-emerald-700 hover:scale-110 transition-all shadow-xl ring-4 ring-white">
+                  <FiCamera className="w-5 h-5" />
                   <input
                     type="text"
                     className="hidden"
@@ -195,27 +201,27 @@ export default function Profile() {
             </div>
 
             {/* Email Display */}
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-semibold text-white mb-1">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-extrabold text-slate-900 mb-2">
                 {name || "Add your name"}
               </h2>
-              <div className="flex items-center justify-center text-gray-400">
-                <FiMail className="mr-2" />
+              <div className="flex items-center justify-center text-slate-500 font-medium bg-slate-50 px-4 py-1.5 rounded-full w-fit mx-auto border border-slate-200">
+                <FiMail className="mr-2 text-slate-400" />
                 <span>{user.email}</span>
               </div>
             </div>
 
             {/* Edit Form */}
-            <div className="space-y-6">
+            <div className="space-y-6 max-w-2xl mx-auto">
               {/* Name Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">
                   Full Name
                 </label>
                 <input
                   type="text"
                   placeholder="Enter your full name"
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -223,39 +229,41 @@ export default function Profile() {
 
               {/* Bio Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">
                   Bio
                 </label>
                 <textarea
                   placeholder="Tell us about yourself..."
                   rows="4"
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium resize-none leading-relaxed"
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs font-bold text-slate-400 mt-2">
                   Brief description for your profile. URLs are hyperlinked.
                 </p>
               </div>
 
               {/* Profile Image URL Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">
                   Profile Image URL
                 </label>
                 <div
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={handleDrop}
-                  className="w-full border-2 border-dashed border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 transition"
+                  className="w-full border-2 border-dashed border-slate-200 rounded-xl p-8 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition-colors"
                 >
-                  <FiCamera className="mx-auto text-gray-400 text-2xl mb-2" />
+                  <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                     <FiCamera className="text-emerald-500 text-2xl" />
+                  </div>
 
-                  <p className="text-gray-300">
+                  <p className="text-slate-700 font-bold mb-1">
                     Drag & Drop your profile image here
                   </p>
 
-                  <p className="text-gray-500 text-sm mt-1">
-                    or click to upload
+                  <p className="text-slate-500 text-sm font-medium">
+                    or click to browse a file manually
                   </p>
 
                   <input
@@ -268,37 +276,47 @@ export default function Profile() {
 
                   <label
                     htmlFor="imageUpload"
-                    className="cursor-pointer text-blue-400 text-sm"
+                    className="cursor-pointer text-emerald-600 font-bold text-sm bg-emerald-50 px-4 py-2 rounded-lg mt-4 inline-block hover:bg-emerald-100 transition-colors"
                   >
-                    Browse File
+                    Browse Local File
                   </label>
                 </div>
                 {image && (
-                  <img
-                    src={image}
-                    className="w-32 h-32 rounded-full mx-auto mt-4 object-cover"
-                  />
+                   <div className="mt-6 flex flex-col items-center">
+                    <p className="text-sm font-bold text-slate-500 mb-3">Image Preview</p>
+                    <img
+                        src={image}
+                        className="w-32 h-32 rounded-3xl object-cover shadow-sm ring-1 ring-slate-200"
+                    />
+                  </div>
                 )}
-                <p className="text-xs text-gray-500 mt-1">
-                  Enter a direct link to your profile image
-                </p>
+                
+                <div className="mt-4">
+                  <input
+                      type="text"
+                      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-sm"
+                      value={image}
+                      onChange={(e) => setImage(e.target.value)}
+                      placeholder="Or paste an image URL directly here..."
+                  />
+                </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex space-x-4 pt-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-6 mt-4 border-t border-slate-100">
                 <button
                   onClick={updateProfile}
                   disabled={isSaving}
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:shadow-lg hover:shadow-blue-500/25 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="flex-1 bg-emerald-600 text-white py-4 px-6 rounded-xl font-bold hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
                 >
                   {isSaving ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      Saving...
+                      <div className="w-5 h-5 border-4 border-emerald-200 border-t-white rounded-full animate-spin mr-3"></div>
+                      Saving Updates...
                     </>
                   ) : (
                     <>
-                      <FiSave className="mr-2" />
+                      <FiSave className="mr-2" size={20} />
                       Save Changes
                     </>
                   )}
@@ -306,10 +324,10 @@ export default function Profile() {
 
                 <button
                   onClick={logout}
-                  className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 py-3 px-4 rounded-lg font-medium hover:bg-red-500/20 hover:border-red-500/50 transition flex items-center justify-center"
+                  className="flex-1 bg-white border-2 border-slate-200 text-slate-700 py-4 px-6 rounded-xl font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all flex items-center justify-center focus:outline-none"
                 >
-                  <FiLogOut className="mr-2" />
-                  Logout
+                  <FiLogOut className="mr-2" size={20} />
+                  Log Out
                 </button>
               </div>
             </div>
@@ -317,31 +335,34 @@ export default function Profile() {
         </div>
 
         {/* Additional Info Card */}
-        <div className="mt-6 bg-gray-800/50 rounded-xl border border-gray-700 p-6">
-          <h3 className="text-white font-medium mb-3 flex items-center">
-            <FiEdit2 className="mr-2 text-blue-400" />
-            Account Information
+        <div className="mt-8 bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+          <h3 className="text-slate-900 font-bold mb-5 flex items-center text-lg">
+            <FiEdit2 className="mr-3 text-emerald-600" />
+            Account Information Details
           </h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Member since</span>
-              <span className="text-gray-300">
+          <div className="space-y-4 text-sm font-medium">
+            <div className="flex justify-between items-center py-2 border-b border-slate-100">
+              <span className="text-slate-500">Member since</span>
+              <span className="text-slate-900 bg-slate-50 px-3 py-1 rounded border border-slate-200">
                 {user.createdAt
                   ? new Date(user.createdAt).toLocaleDateString()
                   : "N/A"}
               </span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Last updated</span>
-              <span className="text-gray-300">
+            <div className="flex justify-between items-center py-2 border-b border-slate-100">
+              <span className="text-slate-500">Last updated</span>
+              <span className="text-slate-900 bg-slate-50 px-3 py-1 rounded border border-slate-200">
                 {user.updatedAt
                   ? new Date(user.updatedAt).toLocaleDateString()
                   : "N/A"}
               </span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Account status</span>
-              <span className="text-green-400">Active</span>
+            <div className="flex justify-between items-center py-2">
+              <span className="text-slate-500">Account status</span>
+              <span className="text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded border border-emerald-100 flex items-center">
+                 <span className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span>
+                 Active
+              </span>
             </div>
           </div>
         </div>

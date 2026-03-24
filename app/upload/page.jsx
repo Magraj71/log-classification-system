@@ -79,34 +79,34 @@ export default function UploadPage() {
 
   const getConfidenceColor = (confidence) => {
     const num = parseFloat(confidence) || 0;
-    if (num >= 90) return "text-green-400 bg-green-900/30 border-green-500/30";
-    if (num >= 70) return "text-yellow-400 bg-yellow-900/30 border-yellow-500/30";
-    return "text-red-400 bg-red-900/30 border-red-500/30";
+    if (num >= 90) return "text-emerald-700 bg-emerald-50 border-emerald-200";
+    if (num >= 70) return "text-yellow-700 bg-yellow-50 border-yellow-200";
+    return "text-red-700 bg-red-50 border-red-200";
   };
 
   const getCategoryIcon = (category) => {
     switch(category?.toLowerCase()) {
       case 'error':
-        return <FiXCircle className="w-8 h-8 text-red-400" />;
+        return <FiXCircle className="w-8 h-8 text-red-500" />;
       case 'warning':
-        return <FiAlertCircle className="w-8 h-8 text-yellow-400" />;
+        return <FiAlertCircle className="w-8 h-8 text-yellow-500" />;
       case 'info':
-        return <FiCheckCircle className="w-8 h-8 text-green-400" />;
+        return <FiCheckCircle className="w-8 h-8 text-emerald-500" />;
       default:
-        return <FiActivity className="w-8 h-8 text-blue-400" />;
+        return <FiActivity className="w-8 h-8 text-teal-500" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pt-24 pb-10">
+    <div className="min-h-screen bg-slate-50 pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Section */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+        <div className="mb-10">
+          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
             Log Analysis
           </h1>
-          <p className="text-gray-400 mt-2 text-lg">
+          <p className="text-slate-500 mt-2 text-lg font-medium">
             Paste your system log below for instant AI-powered classification
           </p>
         </div>
@@ -114,65 +114,68 @@ export default function UploadPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="space-y-6">
-            <div className="bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-700">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-white flex items-center">
-                  <FiFileText className="mr-2 text-blue-400" />
-                  Input Log
+            <div className="bg-white rounded-3xl shadow-sm hover:shadow-md transition-shadow p-8 border border-slate-200">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-slate-900 flex items-center">
+                  <FiFileText className="mr-3 text-emerald-600" />
+                  Input Log Document
                 </h2>
-                <span className="text-sm text-gray-400">
-                  {log.length} characters
+                <span className="text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
+                  {log.length} Chars
                 </span>
               </div>
 
               <textarea
-                className="w-full h-64 p-4 bg-gray-700/50 border-2 border-gray-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition font-mono text-sm text-white placeholder-gray-400 resize-none"
-                placeholder={`Paste your system log here...\nExample: 2024-01-15 10:30:45 ERROR: Database connection timeout`}
+                className="w-full h-64 p-5 bg-slate-50 border border-slate-200 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all font-mono text-sm text-slate-700 placeholder-slate-400 resize-none font-medium leading-relaxed"
+                placeholder={`Paste your system log here...
+                
+Example: 
+2024-01-15 10:30:45 ERROR: Database connection timeout in module UserAuth`}
                 value={log}
                 onChange={(e) => setLog(e.target.value)}
                 disabled={loading}
               />
 
               {error && (
-                <div className="mt-4 p-4 bg-red-900/30 border-l-4 border-red-500 rounded-lg">
-                  <p className="text-red-400 text-sm flex items-center">
+                <div className="mt-5 p-4 bg-red-50 border border-red-100 rounded-xl">
+                  <p className="text-red-600 text-sm font-bold flex items-center">
                     <FiAlertCircle className="mr-2 flex-shrink-0" />
                     {error}
                   </p>
                 </div>
               )}
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap gap-4">
                 <button
                   onClick={analyzeLog}
                   disabled={loading || !log.trim()}
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg shadow-blue-500/25"
+                  className="flex-1 bg-emerald-600 text-white px-6 py-4 rounded-xl font-bold hover:bg-emerald-700 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/20 focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
                 >
                   {loading ? (
                     <>
-                      <FiRefreshCw className="animate-spin" />
-                      <span>Analyzing...</span>
+                      <FiRefreshCw className="animate-spin w-5 h-5" />
+                      <span>Running Analysis...</span>
                     </>
                   ) : (
                     <>
-                      <FiCpu />
-                      <span>Analyze Log</span>
+                      <FiCpu className="w-5 h-5" />
+                      <span>Start Analysis</span>
                     </>
                   )}
                 </button>
                 
                 <button
                   onClick={handleClear}
-                  className="px-6 py-3 border-2 border-gray-600 rounded-xl text-gray-300 hover:bg-gray-700 transition font-semibold"
+                  className="px-8 py-4 bg-white border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors font-bold shadow-sm"
                 >
                   Clear
                 </button>
               </div>
 
               {/* Sample Logs */}
-              <div className="mt-6 pt-6 border-t border-gray-700">
-                <p className="text-sm text-gray-400 mb-3">Sample Logs:</p>
-                <div className="flex flex-wrap gap-2">
+              <div className="mt-8 pt-6 border-t border-slate-100">
+                <p className="text-xs font-bold text-slate-500 mb-4 uppercase tracking-wider">Try a Sample Log:</p>
+                <div className="flex flex-wrap gap-2.5">
                   {[
                     "Database connection timeout",
                     "User authentication failed",
@@ -182,7 +185,7 @@ export default function UploadPage() {
                     <button
                       key={index}
                       onClick={() => setLog(sample)}
-                      className="px-3 py-1 bg-gray-700 text-gray-300 rounded-lg text-sm hover:bg-gray-600 transition"
+                      className="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition-colors"
                     >
                       {sample}
                     </button>
@@ -193,89 +196,89 @@ export default function UploadPage() {
           </div>
 
           {/* Results Section */}
-          <div className="space-y-6">
+          <div className="space-y-6 h-full">
             {result ? (
-              <div className="bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-700">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-white flex items-center">
-                    <FiActivity className="mr-2 text-blue-400" />
-                    Analysis Result
+              <div className="bg-white rounded-3xl shadow-sm hover:shadow-md transition-shadow p-8 border border-slate-200 h-full">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-xl font-bold text-slate-900 flex items-center">
+                    <FiActivity className="mr-3 text-emerald-600" />
+                    Analysis Report
                   </h2>
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-3">
                     <button
                       onClick={handleCopyResult}
-                      className="p-2 hover:bg-gray-700 rounded-lg transition relative"
-                      title="Copy result"
+                      className="p-2.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 rounded-xl transition-colors relative text-slate-600"
+                      title="Copy result JSON"
                     >
-                      <FiCopy className="text-gray-400" />
+                      <FiCopy className="w-4 h-4" />
                       {copied && (
-                        <span className="absolute -top-8 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                        <span className="absolute -top-10 -right-2 bg-slate-900 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg shadow-lg">
                           Copied!
                         </span>
                       )}
                     </button>
                     <button
-                      className="p-2 hover:bg-gray-700 rounded-lg transition"
-                      title="Download result"
+                      className="p-2.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 rounded-xl transition-colors text-slate-600"
+                      title="Download Report"
                     >
-                      <FiDownload className="text-gray-400" />
+                      <FiDownload className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
 
                 {/* Main Result Card */}
-                <div className="bg-gray-700/30 rounded-xl p-6 mb-6 border border-gray-600">
-                  <div className="flex items-start space-x-4">
-                    <div className="p-3 bg-gray-800 rounded-xl border border-gray-600">
+                <div className="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-200">
+                  <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-5">
+                    <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm shrink-0">
                       {getCategoryIcon(result.category)}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-                        <h3 className="text-2xl font-bold text-white">
+                    <div className="flex-1 w-full">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-3">
+                        <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">
                           {result.category || "Unknown"}
                         </h3>
-                        <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getConfidenceColor(result.confidence)}`}>
+                        <span className={`px-4 py-1.5 rounded-full text-sm font-bold border shrink-0 ${getConfidenceColor(result.confidence)}`}>
                           {result.confidence}% Confidence
                         </span>
                       </div>
-                      <p className="text-gray-300">
-                        {result.description || "Log analysis complete"}
+                      <p className="text-slate-600 font-medium leading-relaxed">
+                        {result.description || "Log analysis complete without detailed description."}
                       </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Detailed Analysis */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-white flex items-center">
-                    <FiBarChart2 className="mr-2 text-blue-400" />
-                    Detailed Analysis
+                <div className="space-y-6">
+                  <h3 className="text-lg font-bold text-slate-900 flex items-center mb-4">
+                    <FiBarChart2 className="mr-2.5 text-emerald-600" />
+                    Detailed Information
                   </h3>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600">
-                      <div className="flex items-center text-gray-400 mb-1">
-                        <FiFileText className="mr-2" size={14} />
-                        <p className="text-sm">Log Length</p>
+                  <div className="grid grid-cols-2 gap-5">
+                    <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                      <div className="flex items-center text-slate-500 mb-2 font-bold text-xs uppercase tracking-wider">
+                        <FiFileText className="mr-2" size={16} />
+                        Log Length
                       </div>
-                      <p className="text-xl font-semibold text-white">{log.length} chars</p>
+                      <p className="text-2xl font-extrabold text-slate-900">{log.length} <span className="text-sm font-bold text-slate-400">chars</span></p>
                     </div>
-                    <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600">
-                      <div className="flex items-center text-gray-400 mb-1">
-                        <FiTag className="mr-2" size={14} />
-                        <p className="text-sm">Words</p>
+                    <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                      <div className="flex items-center text-slate-500 mb-2 font-bold text-xs uppercase tracking-wider">
+                        <FiTag className="mr-2" size={16} />
+                        Word Count
                       </div>
-                      <p className="text-xl font-semibold text-white">{log.split(/\s+/).length}</p>
+                      <p className="text-2xl font-extrabold text-slate-900">{log.split(/\s+/).length} <span className="text-sm font-bold text-slate-400">words</span></p>
                     </div>
                   </div>
 
                   {/* Keywords/Entities */}
                   {result.keywords && result.keywords.length > 0 && (
-                    <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600">
-                      <p className="text-sm text-gray-400 mb-2">Key Terms Found</p>
-                      <div className="flex flex-wrap gap-2">
+                    <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                      <p className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-wider">Key Terms Identified</p>
+                      <div className="flex flex-wrap gap-2.5">
                         {result.keywords.map((keyword, index) => (
-                          <span key={index} className="px-3 py-1 bg-blue-900/50 text-blue-400 rounded-full text-sm border border-blue-500/30">
+                          <span key={index} className="px-3 py-1.5 bg-teal-50 text-teal-700 rounded-lg text-sm font-bold border border-teal-100">
                             {keyword}
                           </span>
                         ))}
@@ -285,57 +288,63 @@ export default function UploadPage() {
 
                   {/* Suggestions */}
                   {result.suggestions && (
-                    <div className="bg-purple-900/30 rounded-lg p-4 border border-purple-500/30">
-                      <p className="text-sm font-semibold text-purple-400 mb-2">Suggestions</p>
-                      <p className="text-sm text-purple-300">{result.suggestions}</p>
+                    <div className="bg-indigo-50 rounded-xl p-5 border border-indigo-100">
+                      <p className="text-xs font-bold text-indigo-500 mb-2 uppercase tracking-wider flex items-center">
+                        <FiTrendingUp className="mr-1.5" /> Recommended Steps
+                      </p>
+                      <p className="text-sm font-medium text-indigo-900 leading-relaxed">{result.suggestions}</p>
                     </div>
                   )}
 
                   {/* Metadata */}
-                  <div className="text-xs text-gray-500 pt-4 border-t border-gray-700">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-400 pt-6 border-t border-slate-100">
                     <p>Analyzed at: {new Date().toLocaleString()}</p>
-                    <p>Model: BERT Ensemble</p>
+                    <p className="flex items-center bg-slate-100 px-2.5 py-1 rounded-md text-slate-500">
+                      Model: BERT Ensemble Pipeline
+                    </p>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="bg-gray-800 rounded-2xl shadow-xl p-12 border border-gray-700 flex flex-col items-center justify-center text-center h-full min-h-[500px]">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center mb-6 border border-gray-600">
-                  <FiUpload className="w-12 h-12 text-blue-400" />
+              <div className="bg-white rounded-3xl shadow-sm p-12 border border-slate-200 flex flex-col items-center justify-center text-center h-full min-h-[500px]">
+                <div className="w-28 h-28 bg-emerald-50 rounded-full flex items-center justify-center mb-8 ring-8 ring-emerald-50/50">
+                  <FiUpload className="w-10 h-10 text-emerald-500" />
                 </div>
-                <h3 className="text-2xl font-semibold text-white mb-2">
+                <h3 className="text-2xl font-extrabold text-slate-900 mb-3">
                   Ready to Analyze
                 </h3>
-                <p className="text-gray-400 max-w-md mb-6">
-                  Paste your system log on the left and click "Analyze Log" to see AI-powered classification results
+                <p className="text-slate-500 font-medium max-w-sm leading-relaxed">
+                  Paste your system log on the left side and click <strong className="text-slate-700">"Start Analysis"</strong> to securely process your log data.
                 </p>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  
-                  
-                </div>
               </div>
             )}
           </div>
         </div>
 
         {/* Features Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition">
-            <FiTrendingUp className="w-8 h-8 text-blue-400 mb-4" />
-            <h3 className="font-semibold text-white mb-2">Multi-Model Analysis</h3>
-            <p className="text-sm text-gray-400">Combines Regex, NLP, BERT for accurate classification</p>
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+            <div className="w-14 h-14 bg-teal-50 rounded-xl flex items-center justify-center mb-6 ring-1 ring-teal-100">
+              <FiTrendingUp className="w-7 h-7 text-teal-600" />
+            </div>
+            <h3 className="font-extrabold text-slate-900 mb-3 text-lg">Multi-Model Engine</h3>
+            <p className="text-sm font-medium text-slate-500 leading-relaxed">Combines Regex, NLP, & BERT models to ensure high accuracy for every log format.</p>
           </div>
           
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition">
-            <FiActivity className="w-8 h-8 text-purple-400 mb-4" />
-            <h3 className="font-semibold text-white mb-2">Real-time Processing</h3>
-            <p className="text-sm text-gray-400">Instant results with confidence scores and detailed explanations</p>
+          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+             <div className="w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center mb-6 ring-1 ring-emerald-100">
+              <FiActivity className="w-7 h-7 text-emerald-600" />
+            </div>
+            <h3 className="font-extrabold text-slate-900 mb-3 text-lg">Real-time Processing</h3>
+            <p className="text-sm font-medium text-slate-500 leading-relaxed">Instant results with exact confidence scores and detailed remediation explanations.</p>
           </div>
           
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition">
-            <FiFileText className="w-8 h-8 text-green-400 mb-4" />
-            <h3 className="font-semibold text-white mb-2">Multiple Formats</h3>
-            <p className="text-sm text-gray-400">Support for various log formats and custom patterns</p>
+          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+            <div className="w-14 h-14 bg-indigo-50 rounded-xl flex items-center justify-center mb-6 ring-1 ring-indigo-100">
+              <FiFileText className="w-7 h-7 text-indigo-600" />
+            </div>
+            <h3 className="font-extrabold text-slate-900 mb-3 text-lg">Format Agnostic</h3>
+            <p className="text-sm font-medium text-slate-500 leading-relaxed">Seamlessly parse standard log formats, custom stack traces, and database errors.</p>
           </div>
         </div>
       </div>

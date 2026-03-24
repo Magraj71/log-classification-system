@@ -1,45 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useAuth } from "@/app/contexts/AuthContext"; // Import the auth hook
-import { FiHome, FiUser, FiLogOut, FiLogIn, FiUserPlus, FiMenu, FiX, FiLayout } from "react-icons/fi";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { FiHome, FiUser, FiLogOut, FiLogIn, FiUserPlus, FiMenu, FiX, FiLayout, FiActivity } from "react-icons/fi";
 
 export default function Navbar() {
-  const { user, token, logout, loading } = useAuth(); // Get auth state from context
+  const { user, token, logout, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleLogout = () => {
-    logout(); // Use context logout
+    logout();
     setMobileMenuOpen(false);
     router.push("/login");
   };
 
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false);
-  };
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
-  // Show loading state if needed
   if (loading) {
     return (
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gray-300 rounded-lg animate-pulse"></div>
-              <div className="h-6 w-32 bg-gray-300 rounded animate-pulse"></div>
-            </div>
+      <nav className="fixed top-0 w-full z-50 h-[72px] border-b border-emerald-50 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="w-10 h-10 bg-emerald-50 rounded-xl animate-pulse"></div>
+            <div className="h-6 w-32 bg-emerald-50 rounded animate-pulse"></div>
+          </div>
+          <div className="flex items-center space-x-6">
+            <div className="h-5 w-20 bg-emerald-50 rounded animate-pulse hidden md:block"></div>
+            <div className="h-10 w-10 bg-emerald-50 rounded-full animate-pulse"></div>
           </div>
         </div>
       </nav>
@@ -48,34 +46,129 @@ export default function Navbar() {
 
   const loggedIn = !!token;
 
-  return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${
-      scrolled ? "bg-white/95 backdrop-blur-md shadow-lg" : "bg-white shadow-md"
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          
-          {/* Logo */}
-          <Link 
-            href="/" 
-            className="flex items-center space-x-2 group"
-            onClick={closeMobileMenu}
-          >
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center transform group-hover:rotate-6 transition-transform">
-              <span className="text-white font-bold text-lg">LC</span>
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-              LogClassify
-            </span>
-          </Link>
+  // NavLink Component: Soft, appealing green active states
+  const NavLink = ({ href, icon: Icon, children }) => {
+    const isActive = pathname === href;
+    return (
+      <Link
+        href={href}
+        className={`flex items-center space-x-2 px-3.5 py-2.5 rounded-xl text-[15px] font-medium transition-all duration-300 ${
+          isActive 
+            ? "bg-emerald-50 text-emerald-700 shadow-sm ring-1 ring-emerald-100" 
+            : "text-slate-500 hover:text-emerald-700 hover:bg-emerald-50/50"
+        }`}
+      >
+        <Icon className={`w-[18px] h-[18px] ${isActive ? "text-emerald-600" : "text-slate-400"}`} />
+        <span>{children}</span>
+      </Link>
+    );
+  };
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+  return (
+    <>
+      <nav 
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+          scrolled 
+            ? "bg-white/90 backdrop-blur-xl border-b border-emerald-100/50 shadow-lg shadow-emerald-900/5" 
+            : "bg-white border-b border-emerald-50"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-[72px]">
+            
+            {/* Logo */}
             <Link 
               href="/" 
-              className="flex items-center space-x-1 text-gray-700 hover:text-blue-500 transition-colors group"
+              className="flex items-center space-x-3 group focus:outline-none"
+              onClick={closeMobileMenu}
             >
-              <FiHome className="group-hover:scale-110 transition-transform" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/40 transition-all duration-300 transform group-hover:-translate-y-0.5">
+                <FiActivity className="text-white w-6 h-6 stroke-[2.5px]" />
+              </div>
+              <span className="text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-teal-800">
+                LogClassify
+              </span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-1.5 list-none">
+              <NavLink href="/" icon={FiHome}>Home</NavLink>
+              
+              {loggedIn && (
+                <>
+                  <NavLink href="/dashboard" icon={FiLayout}>Dashboard</NavLink>
+                </>
+              )}
+            </div>
+
+            {/* Desktop Right Section (Auth / Profile) */}
+            <div className="hidden md:flex items-center space-x-5">
+              {loggedIn ? (
+                <div className="flex items-center space-x-4 pl-5 border-l border-emerald-100">
+                  <Link 
+                    href="/profile"
+                    className="flex items-center space-x-3 py-1.5 px-1.5 pr-4 rounded-full border border-emerald-100/80 bg-white hover:border-emerald-200 hover:bg-emerald-50/30 hover:shadow-sm transition-all group"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm ring-1 ring-emerald-100/50 group-hover:bg-emerald-100 transition-colors">
+                      {(user?.name || user?.email || "U").charAt(0).toUpperCase()}
+                    </div>
+                    <span className="font-medium text-slate-600 group-hover:text-emerald-800 transition-colors max-w-[140px] truncate">
+                      {user?.name || user?.email?.split('@')[0] || "User"}
+                    </span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="p-2.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all outline-none"
+                    title="Log out"
+                  >
+                    <FiLogOut className="w-5 h-5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <Link 
+                    href="/login" 
+                    className="text-[15px] font-medium text-slate-500 hover:text-emerald-700 px-3 py-2 transition-colors"
+                  >
+                    Log in
+                  </Link>
+                  <Link 
+                    href="/signup" 
+                    className="flex items-center space-x-1.5 text-[15px] font-medium bg-emerald-600 text-white px-5 py-2.5 rounded-xl hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all transform hover:-translate-y-0.5"
+                  >
+                    <span>Get Started</span>
+                    <FiUserPlus className="w-4 h-4 ml-1 opacity-90" />
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <div className="flex md:hidden items-center">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2.5 -mr-2 text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-xl transition-all focus:outline-none"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Dropdown */}
+        <div 
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white border-b border-emerald-100 absolute w-full shadow-2xl shadow-emerald-900/10 ${
+            mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 border-transparent shadow-none"
+          }`}
+        >
+          <div className="px-4 py-5 space-y-1.5">
+            <Link 
+              href="/" 
+              className={`flex items-center space-x-4 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-colors ${pathname === '/' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}`}
+              onClick={closeMobileMenu}
+            >
+              <FiHome className={`w-5 h-5 ${pathname === '/' ? 'text-emerald-600' : 'text-slate-400'}`} />
               <span>Home</span>
             </Link>
 
@@ -83,145 +176,63 @@ export default function Navbar() {
               <>
                 <Link 
                   href="/dashboard" 
-                  className="flex items-center space-x-1 text-gray-700 hover:text-blue-500 transition-colors group"
+                  className={`flex items-center space-x-4 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-colors ${pathname === '/dashboard' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}`}
+                  onClick={closeMobileMenu}
                 >
-                  <FiLayout className="group-hover:scale-110 transition-transform" />
+                  <FiLayout className={`w-5 h-5 ${pathname === '/dashboard' ? 'text-emerald-600' : 'text-slate-400'}`} />
                   <span>Dashboard</span>
                 </Link>
-
                 <Link 
                   href="/profile" 
-                  className="flex items-center space-x-1 text-gray-700 hover:text-blue-500 transition-colors group"
+                  className={`flex items-center space-x-4 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-colors ${pathname === '/profile' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}`}
+                  onClick={closeMobileMenu}
                 >
-                  <FiUser className="group-hover:scale-110 transition-transform" />
+                  <FiUser className={`w-5 h-5 ${pathname === '/profile' ? 'text-emerald-600' : 'text-slate-400'}`} />
                   <span>Profile</span>
                 </Link>
-
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-500 border-l border-gray-300 pl-4">
-                    Hi, <span className="font-semibold text-gray-700">{user?.name || user?.email || "User"}</span>
-                  </span>
+                
+                <div className="mt-6 pt-6 border-t border-slate-100">
+                  <div className="flex items-center px-4 mb-5">
+                    <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg mr-4 shadow-sm ring-1 ring-emerald-100">
+                      {(user?.name || user?.email || "U").charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[15px] font-bold text-slate-800">{user?.name || user?.email?.split('@')[0] || "User"}</span>
+                      <span className="text-sm text-slate-500 truncate max-w-[200px]">{user?.email}</span>
+                    </div>
+                  </div>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center space-x-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all transform hover:scale-105 shadow-md hover:shadow-red-500/25"
+                    className="w-full flex items-center space-x-4 px-4 py-3.5 text-[15px] font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl transition-colors"
                   >
-                    <FiLogOut />
-                    <span>Logout</span>
+                    <FiLogOut className="w-5 h-5" />
+                    <span>Log out</span>
                   </button>
                 </div>
               </>
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="mt-4 pt-6 border-t border-slate-100 space-y-3">
                 <Link 
                   href="/login" 
-                  className="flex items-center space-x-1 text-gray-700 hover:text-blue-500 transition-colors group"
+                  className="flex items-center justify-center space-x-2 px-4 py-3 text-[15px] font-medium text-slate-700 hover:bg-slate-50 border border-slate-200 rounded-xl transition-colors w-full"
+                  onClick={closeMobileMenu}
                 >
-                  <FiLogIn className="group-hover:scale-110 transition-transform" />
-                  <span>Login</span>
+                  <span>Log in</span>
                 </Link>
-
                 <Link 
                   href="/signup" 
-                  className="flex items-center space-x-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all transform hover:scale-105 shadow-md hover:shadow-blue-500/25"
+                  className="flex items-center justify-center w-full space-x-2 px-4 py-3 bg-emerald-600 text-white text-[15px] font-medium rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20"
+                  onClick={closeMobileMenu}
                 >
-                  <FiUserPlus />
-                  <span>Signup</span>
+                  <span>Get Started for Free</span>
                 </Link>
               </div>
             )}
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <FiX className="w-6 h-6 text-gray-600" />
-            ) : (
-              <FiMenu className="w-6 h-6 text-gray-600" />
-            )}
-          </button>
         </div>
-      </div>
-
-      {/* Mobile Navigation */}
-      <div className={`md:hidden transition-all duration-300 overflow-hidden ${
-        mobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-      }`}>
-        <div className="bg-white border-t border-gray-100 shadow-lg px-4 py-4 space-y-3">
-          {/* Mobile User Greeting (when logged in) */}
-          {loggedIn && (
-            <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg mb-2">
-              <p className="text-sm text-gray-600">Logged in as</p>
-              <p className="font-semibold text-gray-800">{user?.name || user?.email || "User"}</p>
-            </div>
-          )}
-
-          <Link 
-            href="/" 
-            className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
-            onClick={closeMobileMenu}
-          >
-            <FiHome className="text-blue-500" />
-            <span className="font-medium">Home</span>
-          </Link>
-
-          {loggedIn ? (
-            <>
-              {/* Dashboard Link for Mobile */}
-              <Link 
-                href="/dashboard" 
-                className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
-                onClick={closeMobileMenu}
-              >
-                <FiLayout className="text-blue-500" />
-                <span className="font-medium">Dashboard</span>
-              </Link>
-
-              {/* Profile Link for Mobile */}
-              <Link 
-                href="/profile" 
-                className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
-                onClick={closeMobileMenu}
-              >
-                <FiUser className="text-blue-500" />
-                <span className="font-medium">Profile</span>
-              </Link>
-
-              {/* Logout Button for Mobile */}
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              >
-                <FiLogOut />
-                <span className="font-medium">Logout</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <Link 
-                href="/login" 
-                className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
-                onClick={closeMobileMenu}
-              >
-                <FiLogIn className="text-blue-500" />
-                <span className="font-medium">Login</span>
-              </Link>
-
-              <Link 
-                href="/signup" 
-                className="flex items-center space-x-3 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-colors"
-                onClick={closeMobileMenu}
-              >
-                <FiUserPlus />
-                <span className="font-medium">Signup</span>
-              </Link>
-            </>
-          )}
-        </div>
-      </div>
-    </nav>
+      </nav>
+      {/* Spacer to prevent content from hiding under fixed navbar */}
+      <div className="h-[72px] w-full bg-transparent"></div>
+    </>
   );
 }

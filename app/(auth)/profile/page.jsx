@@ -58,10 +58,7 @@ export default function Profile() {
   });
 
   // API Key States
-  const [apiKeys, setApiKeys] = useState([
-    { id: 1, name: "Production Server", key: "sk_log_prod_***9x2P", createdAt: "2024-02-10", lastUsed: "Today" },
-    { id: 2, name: "Staging Pipeline", key: "sk_log_stg_***k3mQ", createdAt: "2024-03-01", lastUsed: "Yesterday" }
-  ]);
+  const [apiKeys, setApiKeys] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -87,6 +84,14 @@ export default function Profile() {
         } else {
           router.push("/login");
         }
+        const keysRes = await fetch("/api/user/apikey", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (keysRes.ok) {
+          const keysData = await keysRes.json();
+          setApiKeys(keysData.keys || []);
+        }
+
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       } finally {
@@ -177,21 +182,41 @@ export default function Profile() {
     setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
   };
 
-  const handleGenerateApiKey = () => {
-    const newKey = {
-      id: Date.now(),
-      name: "New API Key",
-      key: `sk_log_new_***${Math.floor(Math.random()*1000)}`,
-      createdAt: "Just now",
-      lastUsed: "Never"
-    };
-    setApiKeys([...apiKeys, newKey]);
-    showToast("success", "New API Key generated successfully!");
+  const handleGenerateApiKey = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch("/api/user/apikey", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const newKey = await res.json();
+        setApiKeys([...apiKeys, newKey]);
+        showToast("success", "New API Key generated successfully!");
+      } else {
+        showToast("error", "Failed to generate API Key.");
+      }
+    } catch (e) {
+      showToast("error", "Network error while generating API Key.");
+    }
   };
 
-  const handleRevokeKey = (id) => {
-    setApiKeys(apiKeys.filter(k => k.id !== id));
-    showToast("success", "API Key revoked and disabled.");
+  const handleRevokeKey = async (id) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`/api/user/apikey?id=${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setApiKeys(apiKeys.filter(k => k.id !== id));
+        showToast("success", "API Key revoked and disabled.");
+      } else {
+        showToast("error", "Failed to revoke API Key.");
+      }
+    } catch (e) {
+      showToast("error", "Network error while revoking API Key.");
+    }
   };
 
   const logout = () => {

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
-import { FiHome, FiUser, FiLogOut, FiLogIn, FiUserPlus, FiMenu, FiX, FiLayout, FiActivity } from "react-icons/fi";
+import { FiHome, FiUser, FiLogOut, FiLogIn, FiUserPlus, FiMenu, FiX, FiLayout, FiActivity, FiCpu } from "react-icons/fi";
 
 export default function Navbar() {
   const { user, token, logout, loading } = useAuth();
@@ -93,6 +93,7 @@ export default function Navbar() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-1.5 list-none">
               <NavLink href="/" icon={FiHome}>Home</NavLink>
+              <NavLink href="/upload" icon={FiCpu}>Analyze Log</NavLink>
               
               {loggedIn && (
                 <>
@@ -170,6 +171,15 @@ export default function Navbar() {
             >
               <FiHome className={`w-5 h-5 ${pathname === '/' ? 'text-emerald-600' : 'text-slate-400'}`} />
               <span>Home</span>
+            </Link>
+
+            <Link 
+              href="/upload" 
+              className={`flex items-center space-x-4 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-colors ${pathname === '/upload' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}`}
+              onClick={closeMobileMenu}
+            >
+              <FiCpu className={`w-5 h-5 ${pathname === '/upload' ? 'text-emerald-600' : 'text-slate-400'}`} />
+              <span>Analyze Log</span>
             </Link>
 
             {loggedIn ? (

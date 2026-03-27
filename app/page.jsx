@@ -33,7 +33,7 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-2">NLP Processing</h3>
+            <h3 className="text-xl font-bold  text-slate-800 mb-2">NLP Processing</h3>
             <p className="text-slate-600 leading-relaxed">Natural language understanding for context-aware log analysis using compromise.js</p>
           </div>
 

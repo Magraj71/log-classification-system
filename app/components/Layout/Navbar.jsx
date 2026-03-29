@@ -4,10 +4,12 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
-import { FiHome, FiUser, FiLogOut, FiLogIn, FiUserPlus, FiMenu, FiX, FiLayout, FiActivity, FiCpu } from "react-icons/fi";
+import { useTheme } from "@/app/contexts/ThemeContext";
+import { FiHome, FiUser, FiLogOut, FiLogIn, FiUserPlus, FiMenu, FiX, FiLayout, FiActivity, FiCpu, FiMoon, FiSun } from "react-icons/fi";
 
 export default function Navbar() {
   const { user, token, logout, loading } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
@@ -104,6 +106,13 @@ export default function Navbar() {
 
             {/* Desktop Right Section (Auth / Profile) */}
             <div className="hidden md:flex items-center space-x-5">
+              <button
+                onClick={toggleTheme}
+                className="p-2.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all outline-none"
+                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
+              </button>
               {loggedIn ? (
                 <div className="flex items-center space-x-4 pl-5 border-l border-emerald-100">
                   <Link 

@@ -1,56 +1,47 @@
 "use client";
 
-import { useAuth } from "@/app/contexts/AuthContext";
-import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  FiArrowLeft,
-  FiFileText,
-  FiAlertCircle,
-  FiCheckCircle,
-  FiCode,
-  FiTerminal,
-  FiClock,
-  FiActivity
+  FiArrowLeft, FiAlertCircle, FiCheckCircle, FiCode, FiFileText,
+  FiClock, FiTarget, FiCpu, FiLayers
 } from "react-icons/fi";
+import ExportButtons from "@/app/components/ExportButtons";
 
-export default function LogDetailsPage() {
-  const { user, token, loading } = useAuth();
-  const router = useRouter();
+export default function LogDetailPage() {
   const params = useParams();
-  const id = params?.id;
-  
+  const router = useRouter();
   const [log, setLog] = useState(null);
-  const [fetching, setFetching] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!loading && !token) {
-      router.push("/login");
-    }
-  }, [token, loading, router]);
+    if (!params.id) return;
 
-  useEffect(() => {
-    if (!id) return;
-    
-    setFetching(true);
-    fetch(`/api/logs/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) throw new Error(data.error);
+    const fetchLog = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/logs/${params.id}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Log not found");
         setLog(data);
-      })
-      .catch(err => setError(err.message))
-      .finally(() => setFetching(false));
-  }, [id]);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (loading || fetching) {
+    fetchLog();
+  }, [params.id]);
+
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 font-medium text-lg">Fetching Log Trace...</p>
+          <p className="text-slate-600 font-medium text-lg">Loading log analysis...</p>
         </div>
       </div>
     );
@@ -58,143 +49,253 @@ export default function LogDetailsPage() {
 
   if (error || !log) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 pt-16">
-        <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-sm text-center border border-slate-200">
-           <FiAlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-           <h2 className="text-2xl font-bold text-slate-900 mb-2">Log Not Found</h2>
-           <p className="text-slate-500 mb-6">{error || "The log analysis you are looking for does not exist."}</p>
-           <button onClick={() => router.push("/dashboard")} className="px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition">
-             Return to Dashboard
-           </button>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <FiAlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Log Not Found</h2>
+          <p className="text-slate-500 mb-6">{error || "This log entry doesn't exist."}</p>
+          <Link href="/dashboard" className="px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition">
+            ← Back to Dashboard
+          </Link>
         </div>
       </div>
     );
   }
 
+  const getCategoryStyle = (cat) => {
+    switch(cat) {
+      case "ERROR": return "bg-red-50 text-red-700 border-red-200";
+      case "WARNING": return "bg-yellow-50 text-yellow-700 border-yellow-200";
+      default: return "bg-emerald-50 text-emerald-700 border-emerald-200";
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 pt-24 pb-12 font-sans">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Navigation & Header */}
-        <div className="mb-8">
-          <Link href="/dashboard" className="inline-flex items-center text-slate-500 hover:text-emerald-600 font-bold transition mb-6 group">
-            <FiArrowLeft className="mr-2 transform group-hover:-translate-x-1 transition" />
-            Back to Dashboard
-          </Link>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-             <div>
-               <div className="flex items-center gap-3 mb-2">
-                 <span className={`px-3 py-1 text-xs font-bold rounded-md border uppercase tracking-widest ${
-                    log.category === "ERROR" ? "bg-red-50 text-red-700 border-red-200" :
-                    log.category === "WARNING" ? "bg-yellow-50 text-yellow-700 border-yellow-200" :
-                    "bg-emerald-50 text-emerald-700 border-emerald-200"
-                 }`}>
-                   {log.category || "UNKNOWN"}
-                 </span>
-                 <span className="flex items-center text-sm font-bold text-slate-500">
-                   <FiActivity className="mr-1.5" /> {log.confidence || 0}% AI Confidence
-                 </span>
-                 <span className="flex items-center text-sm font-bold text-slate-500">
-                   <FiClock className="mr-1.5" /> {new Date(log.createdAt).toLocaleString()}
-                 </span>
-               </div>
-               <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-                 {log.errorSummary || "Detailed Log Analysis"}
-               </h1>
-             </div>
-             <div className="flex items-center gap-2">
-               <span className="bg-slate-200 text-slate-600 px-3 py-1 rounded font-mono text-xs font-bold">
-                 ID: {log._id}
-               </span>
-             </div>
+    <div className="min-h-screen bg-slate-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+
+        {/* Header */}
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <button onClick={() => router.back()} className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-bold text-sm mb-3 transition">
+              <FiArrowLeft /> Back to Dashboard
+            </button>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Log Analysis Detail</h1>
+            <p className="text-slate-500 font-medium mt-1">
+              <FiClock className="inline mr-1 -mt-0.5" />
+              {new Date(log.createdAt).toLocaleString()}
+            </p>
+          </div>
+          <ExportButtons data={log} filename={`log-${params.id}`} title="Log Detail Report" />
+        </div>
+
+        {/* Meta Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {/* Category */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <p className="text-xs font-bold text-slate-500 uppercase mb-2">Category</p>
+            <span className={`inline-flex px-3 py-1.5 text-sm font-bold uppercase rounded-lg border ${getCategoryStyle(log.category)}`}>
+              {log.category || "UNKNOWN"}
+            </span>
+          </div>
+          {/* Confidence */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <p className="text-xs font-bold text-slate-500 uppercase mb-2">Confidence</p>
+            <p className="text-2xl font-extrabold text-slate-900">{log.confidence || 0}%</p>
+            <div className="h-2 bg-slate-100 rounded-full overflow-hidden mt-2">
+              <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${log.confidence || 0}%` }}></div>
+            </div>
+          </div>
+          {/* Severity */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <p className="text-xs font-bold text-slate-500 uppercase mb-2">Severity</p>
+            {log.severity ? (
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{log.severity.emoji}</span>
+                <div>
+                  <p className="text-lg font-extrabold text-slate-900">{log.severity.score}/10</p>
+                  <p className="text-xs font-bold" style={{ color: log.severity.color }}>{log.severity.level}</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-slate-400 font-medium">N/A</p>
+            )}
+          </div>
+          {/* Classifier */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <p className="text-xs font-bold text-slate-500 uppercase mb-2">Method</p>
+            <p className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+              <FiCpu className="text-emerald-600" /> 
+              {log.classifiers ? "Ensemble" : "Single"}
+            </p>
+            <p className="text-xs text-slate-500 font-medium mt-1">
+              {log.classifiers ? `${log.classifiers.length - 1} classifiers` : "Gemini AI"}
+            </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* LEFT COLUMN: The Fix */}
-          <div className="space-y-8 flex flex-col h-full">
-            {/* Resolution Steps */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex-1">
-              <h2 className="text-xl font-bold text-slate-900 flex items-center mb-6">
-                <FiCheckCircle className="mr-2.5 text-emerald-600" /> Resolution Steps
+        {/* Classifier Comparison Table */}
+        {log.classifiers && log.classifiers.length > 0 && (
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm mb-8 overflow-hidden">
+            <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <FiTarget className="text-emerald-600" /> Multi-Model Classification Comparison
               </h2>
-              <div className="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100">
-                 <ul className="space-y-4">
-                   {log.resolutionSteps?.map((step, idx) => (
-                     <li key={idx} className="flex gap-4">
-                       <span className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm">
-                         {idx + 1}
-                       </span>
-                       <span className="text-slate-800 font-medium leading-relaxed pt-1">
-                         {step}
-                       </span>
-                     </li>
-                   ))}
-                   {(!log.resolutionSteps || log.resolutionSteps.length === 0) && (
-                     <p className="text-slate-500">No resolution steps provided by AI.</p>
-                   )}
-                 </ul>
-              </div>
             </div>
-
-            {/* Root Cause Analysis */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex-1">
-              <h2 className="text-xl font-bold text-slate-900 flex items-center mb-6">
-                <FiFileText className="mr-2.5 text-blue-600" /> Root Cause Analysis
-              </h2>
-              <div className="bg-blue-50/30 p-5 rounded-xl border border-blue-50">
-                 <p className="text-slate-700 leading-relaxed whitespace-pre-wrap font-medium">
-                   {log.rootCause}
-                 </p>
-              </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50">
+                    <th className="text-left py-3 px-6 text-slate-500 font-bold text-xs uppercase">Method</th>
+                    <th className="text-left py-3 px-6 text-slate-500 font-bold text-xs uppercase">Category</th>
+                    <th className="text-left py-3 px-6 text-slate-500 font-bold text-xs uppercase">Confidence</th>
+                    <th className="text-left py-3 px-6 text-slate-500 font-bold text-xs uppercase">Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {log.classifiers.map((clf, idx) => {
+                    const isWinner = clf.method === "Combined";
+                    return (
+                      <tr key={idx} className={`border-b border-slate-50 ${isWinner ? "bg-emerald-50/50" : "hover:bg-slate-50"} transition-colors`}>
+                        <td className="py-3.5 px-6 font-bold text-slate-800">
+                          <span className="mr-2">{clf.icon}</span>{clf.method}
+                          {isWinner && <span className="ml-2 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold border border-emerald-200">FINAL</span>}
+                        </td>
+                        <td className="py-3.5 px-6">
+                          <span className={`inline-flex px-2.5 py-1 text-[11px] font-bold uppercase rounded-lg border ${getCategoryStyle(clf.category)}`}>
+                            {clf.category}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-6">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden max-w-[100px]">
+                              <div 
+                                className={`h-full rounded-full ${
+                                  clf.confidence >= 80 ? "bg-emerald-500" : clf.confidence >= 60 ? "bg-yellow-500" : "bg-red-500"
+                                }`}
+                                style={{ width: `${clf.confidence}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-bold text-slate-700">{clf.confidence}%</span>
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-6 text-slate-500 font-mono text-xs">
+                          {clf.timeMs < 1 ? "<1ms" : `${clf.timeMs}ms`}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
+        )}
 
-          {/* RIGHT COLUMN: Raw Log & Corrected Code */}
-          <div className="bg-slate-900 rounded-2xl shadow-xl border border-slate-800 flex flex-col overflow-hidden h-full min-h-[600px]">
+        {/* Error Summary */}
+        {log.errorSummary && (
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm mb-8 overflow-hidden">
+            <div className="p-6 border-b border-slate-100 bg-red-50/30">
+              <h2 className="text-lg font-bold text-red-700 flex items-center gap-2">
+                <FiAlertCircle /> Error Summary
+              </h2>
+            </div>
+            <div className="p-6">
+              <p className="text-slate-800 font-medium leading-relaxed">{log.errorSummary}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Full Log Text */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm mb-8 overflow-hidden">
+          <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <FiFileText className="text-emerald-600" /> Full Log Text
+            </h2>
+          </div>
+          <div className="p-2">
+            <pre className="bg-slate-900 text-slate-300 p-5 rounded-xl font-mono text-sm overflow-auto max-h-[300px] leading-relaxed">
+              {log.logText}
+            </pre>
+          </div>
+        </div>
+
+        {/* Root Cause */}
+        {log.rootCause && (
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm mb-8 overflow-hidden">
+            <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <FiLayers className="text-emerald-600" /> Root Cause Analysis
+              </h2>
+            </div>
+            <div className="p-6">
+              <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{log.rootCause}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Resolution Steps */}
+        {log.resolutionSteps && log.resolutionSteps.length > 0 && (
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm mb-8 overflow-hidden">
+            <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <FiCheckCircle className="text-emerald-600" /> Resolution Steps
+              </h2>
+            </div>
+            <div className="p-6">
+              <ol className="space-y-4">
+                {log.resolutionSteps.map((step, idx) => (
+                  <li key={idx} className="flex gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm border border-emerald-200">
+                      {idx + 1}
+                    </span>
+                    <p className="text-slate-700 leading-relaxed pt-1">{step}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        )}
+
+        {/* Corrected Code */}
+        {log.correctedCode && (
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm mb-8 overflow-hidden">
+            <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <FiCode className="text-blue-600" /> Corrected Code
+              </h2>
+              <button 
+                onClick={() => navigator.clipboard.writeText(log.correctedCode)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-lg border border-slate-200 transition"
+              >
+                Copy Code
+              </button>
+            </div>
             
-            {log.correctedCode && (
-              <div className="flex-1 flex flex-col min-h-[50%] border-b border-slate-800">
-                <div className="flex items-center justify-between p-4 bg-slate-900/50 border-b border-slate-800">
-                  <h3 className="text-sm font-bold text-blue-400 uppercase tracking-widest flex items-center">
-                    <FiCode className="mr-2" /> Corrected Code
-                  </h3>
-                  <button 
-                    onClick={() => navigator.clipboard.writeText(log.correctedCode)}
-                    className="text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition"
-                  >
-                    Copy
-                  </button>
+            {/* Side-by-side: Original vs Fixed */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+              {log.sourceCode && (
+                <div className="border-r border-slate-200">
+                  <div className="px-4 py-2 bg-red-50 border-b border-slate-200">
+                    <p className="text-xs font-bold text-red-600 uppercase">Original (Before)</p>
+                  </div>
+                  <pre className="p-4 font-mono text-sm text-slate-800 overflow-auto max-h-[400px] bg-red-50/20">
+                    <code>{log.sourceCode}</code>
+                  </pre>
                 </div>
-                <pre className="p-5 font-mono text-sm text-[#e2e8f0] overflow-y-auto flex-1 custom-scrollbar">
+              )}
+              <div>
+                <div className="px-4 py-2 bg-emerald-50 border-b border-slate-200">
+                  <p className="text-xs font-bold text-emerald-600 uppercase">Corrected (After)</p>
+                </div>
+                <pre className="p-4 font-mono text-sm text-slate-800 overflow-auto max-h-[400px] bg-emerald-50/20">
                   <code>{log.correctedCode}</code>
                 </pre>
               </div>
-            )}
-
-            <div className="flex-1 flex flex-col min-h-[50%]">
-              <div className="flex items-center justify-between p-4 bg-slate-900/50 border-b border-slate-800">
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center">
-                  <FiTerminal className="mr-2" /> Original Raw Log
-                </h3>
-              </div>
-              <pre className="p-5 font-mono text-xs text-red-200/80 overflow-y-auto flex-1 custom-scrollbar break-words whitespace-pre-wrap">
-                <code>{log.logText}</code>
-              </pre>
             </div>
-
           </div>
-        </div>
+        )}
+
       </div>
-      
-      {/* Custom Scrollbars */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
-      `}} />
     </div>
   );
 }

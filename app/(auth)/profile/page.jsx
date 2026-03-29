@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import {
   FiUser,
   FiMail,
@@ -49,8 +50,8 @@ export default function Profile() {
   const [showPassword, setShowPassword] = useState(false);
   const [twoFactor, setTwoFactor] = useState(false);
 
-  // Preference States
-  const [theme, setTheme] = useState("light");
+  // Preference States — use real theme context
+  const { theme, setTheme: setAppTheme } = useTheme();
   const [emailAlerts, setEmailAlerts] = useState({
     critical: true,
     weekly: false,
@@ -534,8 +535,8 @@ export default function Profile() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
                     {["light", "dark", "system"].map((t) => (
                       <button 
-                        key={t} onClick={() => { setTheme(t); showToast("success", `Theme set to ${t} (Demo)`); }}
-                        className={`flex flex-col items-center justify-center p-5 rounded-2xl border-2 transition-all ${theme === t ? 'border-emerald-600 bg-emerald-50 text-emerald-700 shadow-sm' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
+                        key={t} onClick={() => { setAppTheme(t); showToast("success", `Theme set to ${t}`); }}
+                        className={`flex flex-col items-center justify-center p-5 rounded-2xl border-2 transition-all ${theme === t || (t === 'system' && localStorage.getItem('theme') === 'system') ? 'border-emerald-600 bg-emerald-50 text-emerald-700 shadow-sm' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
                       >
                         {t === "light" ? <FiSun className="w-8 h-8 mb-2" /> : t === "dark" ? <FiMoon className="w-8 h-8 mb-2" /> : <FiMonitor className="w-8 h-8 mb-2" />}
                         <span className="font-bold capitalize">{t}</span>
